@@ -1,5 +1,33 @@
 import { useState, useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine  } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+
+// Types
+interface Options {
+  pensionEnabled: boolean;
+  pensionType: 'percentage' | 'fixed';
+  pensionValue: number;
+  studentLoanPlan: 'none' | 'plan1' | 'plan2' | 'plan4' | 'plan5' | 'postgrad';
+}
+
+interface Deduction {
+  label: string;
+  amount: number;
+}
+
+interface Calculation {
+  grossAnnual: number;
+  grossMonthly: number;
+  deductions: Deduction[];
+  totalDeductions: number;
+  netAnnual: number;
+  netMonthly: number;
+}
+
+interface GraphDataPoint {
+  grossAnnual: number;
+  netAnnual: number;
+  netMonthly: number;
+}
 
 // Country module interface
 const countries = {
@@ -42,7 +70,7 @@ const countries = {
 };
 
 // Calculate UK salary breakdown
-function calculateUKSalary(grossAnnual, options) {
+function calculateUKSalary(grossAnnual: number, options: Options): Calculation {
   const country = countries.UK;
   const deductions = [];
   
@@ -131,7 +159,7 @@ function calculateUKSalary(grossAnnual, options) {
 }
 
 // Generate graph data
-function generateGraphData(options, minSalary = 15000, maxSalary = 150000, points = 100) {
+function generateGraphData(options: Options, minSalary = 15000, maxSalary = 150000, points = 100): GraphDataPoint[] {
   const data = [];
   const step = (maxSalary - minSalary) / points;
   
@@ -147,9 +175,20 @@ function generateGraphData(options, minSalary = 15000, maxSalary = 150000, point
   return data;
 }
 
+// Custom dot component - defined outside render to avoid recreation
+const CustomDot = (props: any) => {
+  const { cx, cy, payload, salary } = props;
+  if (payload && Math.abs(payload.grossAnnual - salary) < 1500) {
+    return (
+      <circle cx={cx} cy={cy} r={6} fill="#ef4444" stroke="#fff" strokeWidth={2} />
+    );
+  }
+  return null;
+};
+
 function SalaryCalculator() {
   const [country] = useState('UK');
-  const [options, setOptions] = useState({
+  const [options, setOptions] = useState<Options>({
     pensionEnabled: false,
     pensionType: 'percentage',
     pensionValue: 5,
@@ -174,22 +213,11 @@ function SalaryCalculator() {
     setGraphGenerated(true);
   };
   
-  const handleSalaryChange = (value) => {
+  const handleSalaryChange = (value: string | number) => {
     const numValue = Number(value);
     if (!isNaN(numValue) && numValue >= 15000 && numValue <= 150000) {
       setSalary(numValue);
     }
-  };
-  
-  // Custom dot for highlighting current salary
-  const CustomDot = (props) => {
-    const { cx, cy, payload } = props;
-    if (Math.abs(payload.grossAnnual - salary) < 1500) {
-      return (
-        <circle cx={cx} cy={cy} r={6} fill="#ef4444" stroke="#fff" strokeWidth={2} />
-      );
-    }
-    return null;
   };
   
   return (
@@ -320,7 +348,7 @@ function SalaryCalculator() {
                       stroke="#6b7280"
                     />
                     <Tooltip 
-                      formatter={(value) => `£${value.toLocaleString()}`}
+                      formatter={(value: number | undefined) => value ? `£${value.toLocaleString()}` : ''}
                       labelFormatter={(value) => `Gross: £${value.toLocaleString()}`}
                       contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.95)', borderRadius: '8px', border: '1px solid #e5e7eb' }}
                     />
@@ -335,7 +363,7 @@ function SalaryCalculator() {
                       dataKey="netAnnual" 
                       stroke="#2563eb" 
                       strokeWidth={3}
-                      dot={<CustomDot />}
+                      dot={(props) => <CustomDot {...props} salary={salary} />}
                       activeDot={{ r: 6 }}
                     />
                   </LineChart>
