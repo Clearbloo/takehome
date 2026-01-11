@@ -176,9 +176,16 @@ function generateGraphData(options: Options, minSalary = 15000, maxSalary = 1500
 }
 
 // Custom dot component - defined outside render to avoid recreation
-const CustomDot = (props: any) => {
+interface CustomDotProps {
+  cx?: number;
+  cy?: number;
+  payload?: GraphDataPoint;
+  salary: number;
+}
+
+const CustomDot = (props: CustomDotProps) => {
   const { cx, cy, payload, salary } = props;
-  if (payload && Math.abs(payload.grossAnnual - salary) < 1500) {
+  if (payload && cx && cy && Math.abs(payload.grossAnnual - salary) < 1500) {
     return (
       <circle cx={cx} cy={cy} r={6} fill="#ef4444" stroke="#fff" strokeWidth={2} />
     );
