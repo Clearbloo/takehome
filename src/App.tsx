@@ -269,7 +269,7 @@ function SalaryCalculator() {
                           name="pensionType"
                           value="percentage"
                           checked={options.pensionType === 'percentage'}
-                          onChange={(e) => setOptions({...options, pensionType: e.target.value})}
+                          onChange={(e) => setOptions({...options, pensionType: e.target.value as 'percentage' | 'fixed'})}
                           className="mr-2"
                         />
                         <span className="text-sm text-gray-700">Percentage</span>
@@ -280,7 +280,7 @@ function SalaryCalculator() {
                           name="pensionType"
                           value="fixed"
                           checked={options.pensionType === 'fixed'}
-                          onChange={(e) => setOptions({...options, pensionType: e.target.value})}
+                          onChange={(e) => setOptions({...options, pensionType: e.target.value as 'percentage' | 'fixed'})}
                           className="mr-2"
                         />
                         <span className="text-sm text-gray-700">Fixed Amount</span>
@@ -311,7 +311,7 @@ function SalaryCalculator() {
                 </label>
                 <select
                   value={options.studentLoanPlan}
-                  onChange={(e) => setOptions({...options, studentLoanPlan: e.target.value})}
+                  onChange={(e) => setOptions({...options, studentLoanPlan: e.target.value as Options['studentLoanPlan']})}
                   className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 >
                   {Object.entries(countries.UK.studentLoanPlans).map(([key, plan]) => (
