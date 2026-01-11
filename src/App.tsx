@@ -44,7 +44,7 @@ const countries = {
 // Calculate UK salary breakdown
 function calculateUKSalary(grossAnnual, options) {
   const country = countries.UK;
-  let deductions = [];
+  const deductions = [];
   
   // 1. Calculate pension (pre-tax deduction)
   let pensionAmount = 0;
@@ -84,7 +84,7 @@ function calculateUKSalary(grossAnnual, options) {
   
   // 4. Calculate National Insurance
   let nationalInsurance = 0;
-  let remainingForNI = grossAnnual;
+  const remainingForNI = grossAnnual;
   
   for (let i = 1; i < country.niThresholds.length; i++) {
     const prevThreshold = country.niThresholds[i - 1].threshold;
